@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ff3333; /* Red background color */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .slot-machine {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .reel {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin: 0 10px;
+            background-image: linear-gradient(to bottom, #f7f7f7, #ddd);
+            background-size: 100% 200%;
+            transition: background-position 1s, transform 2s cubic-bezier(0.37, 0.15, 0.25, 0.92);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #spin-btn {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #betAmount {
+            width: 50px;
+            text-align: center;
+        }
+
+        #balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+        }
+
+        #betContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #betAmountLabel {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        #celebration {
+            font-size: 20px;
+            color: green;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #gameOver {
+            font-size: 24px;
+            color: red;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="cart-icon">
+            <img src="cart.png" alt="Shop Cart">
+        </div>
+        <h1>Slot Game</h1>
+        <div id="balance">$100</div>
+        <div class="slot-machine">
+            <div class="reel" id="reel1"></div>
+            <div class="reel" id="reel2"></div>
+            <div class="reel" id="reel3"></div>
+        </div>
+        <div id="betContainer">
+            <label for="betAmount" id="betAmountLabel">Bet: $</label>
+            <input type="number" id="betAmount" value="10" min="1">
+        </div>
+        <button id="spin-btn">Spin</button>
+        <p class="celebration" id="celebration">Congratulations!</p>
+        <p id="gameOver">Game Over</p>
+    </div>
+    <script>
+        const symbols = ["Cherry", "Orange", "Lemon", "Apple", "Banana"];
+        const reelElements = document.querySelectorAll(".reel");
+        const celebrationText = document.getElementById("celebration");
+        const balanceDisplay = document.getElementById("balance");
+        const betAmountInput = document.getElementById("betAmount");
+        const gameOverText = document.getElementById("gameOver");
+
+        let balance = 100;
+
+        balanceDisplay.textContent = `$${balance}`;
+
+        document.getElementById("spin-btn").addEventListener("click", spinReels);
+
+        function spinReels() {
+            if (balance <= 0) {
+                gameOverText.style.display = "block";
+                return;
+            }
+
+            const betAmount = parseInt(betAmountInput.value, 10);
+            
+            if (betAmount <= balance && betAmount > 0) {
+                balance -= betAmount;
+                balanceDisplay.textContent = `$${balance}`;
+                
+                reelElements.forEach((reel) => {
+                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    reel.textContent = randomSymbol;
+                    reel.style.backgroundPosition = "0 0";
+                    reel.style.transform = `translateY(-${Math.floor(Math.random() * 5) * 100}px)`;
+                    reel.style.animation = "none";
+                    setTimeout(() => {
+                        reel.style.transition = "transform 2s cubic-bezier(0.37, 0.15, 0.25, 0.92)";
+                        reel.style.transform = "translateY(0)";
+                    }, 0);
+                });
+        
+                setTimeout(() => {
+                    checkWin();
+                }, 2500);
+            }
+        }
+        
+        function checkWin() {
+            const symbolsInReels = Array.from(reelElements).map((reel) => reel.textContent);
+            if (symbolsInReels.every((symbol) => symbol === symbolsInReels[0])) {
+                balance += 100;
+                balanceDisplay.textContent = `$${balance}`;
+                celebrationText.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
